@@ -35,7 +35,7 @@ fn host() -> std::io::Result<()> {
     let msg = trimmed_msg.parse::<u32>().unwrap();
 
     // ask for a prime from the user or use the default (7)
-    print!("enter a prime (or 0 for default): ");
+    print!("enter a prime (or 0 for default -- 7): ");
     io::stdout().flush()?;
     buffer = String::new();
     io::stdin().read_line(&mut buffer)?;
@@ -45,7 +45,7 @@ fn host() -> std::io::Result<()> {
     if prime == 0 { prime = 7; }
 
     // ask for alpha value from the user or use the default (3)  
-    print!("enter an alpha value in 2..p-2 (or 0 for default): ");
+    print!("enter an alpha value in 2..p-2 (or 0 for default -- 3): ");
     io::stdout().flush()?;
     buffer = String::new();
     io::stdin().read_line(&mut buffer)?;
@@ -55,7 +55,7 @@ fn host() -> std::io::Result<()> {
     if alpha == 0 { alpha = 3; }
 
     // ask for d value from the user or use the default (5)  
-    print!("enter a d value in 2..p-2 (or 0 for default): ");
+    print!("enter a d value in 2..p-2 (or 0 for default -- 5): ");
     io::stdout().flush()?;
     buffer = String::new();
     io::stdin().read_line(&mut buffer)?;
@@ -71,7 +71,7 @@ fn host() -> std::io::Result<()> {
     let mut alpha_bytes = u32_to_u8_vec(alpha);
     let mut beta_bytes = u32_to_u8_vec(beta);
 
-    println!("writing prime {:?}", prime);
+    println!("writing prime");
     socket.write(&mut prime_bytes)?;
     socket.flush()?;
     println!("writing alpha");
@@ -84,6 +84,7 @@ fn host() -> std::io::Result<()> {
     let mut buff = [0; 4];
     socket.read_exact(&mut buff)?;
     let Ke = u8_vec_to_u32(buff.try_into().expect("ISSUE WITH KE"));
+    println!("received Ke");
 
     let Km = sqmul::square_mult(Ke, bin_d, prime);
 
@@ -91,6 +92,7 @@ fn host() -> std::io::Result<()> {
     let y = (msg * Km) % prime;
     let mut bin_y = u32_to_u8_vec(y);
 
+    println!("writing y");
     socket.write(&mut bin_y)?;
 
     Ok(())
@@ -123,20 +125,20 @@ fn client() -> std::io::Result<()> {
     let mut buff = [0; 4];
     stream.read_exact(&mut buff)?;
     let prime = u8_vec_to_u32(buff.try_into().expect("ISSUE WITH PRIME"));
+    println!("received prime");
 
-    println!("Received prime");
     buff = [0; 4];
     stream.read_exact(&mut buff)?;
     let alpha = u8_vec_to_u32(buff.try_into().expect("ISSUE WITH ALPHA"));
+    println!("received alpha");
 
-    println!("Received alpha");
     buff = [0; 4];
     stream.read_exact(&mut buff)?;
     let beta = u8_vec_to_u32(buff.try_into().expect("ISSUE WITH BETA"));
-    println!("Received beta");
+    println!("received beta");
 
     // ask for alpha value from the user or use the default (3)  
-    print!("enter an i value in 2..{} (or 0 for default): ", prime-2);
+    print!("enter an i value in 2..{} (or 0 for default -- 3): ", prime-2);
     io::stdout().flush()?;
     let mut input_buffer = String::new();
     io::stdin().read_line(&mut input_buffer)?;
@@ -149,6 +151,7 @@ fn client() -> std::io::Result<()> {
     let Ke = sqmul::square_mult(alpha, bin_i.clone(), prime);
     let mut Ke_bytes = u32_to_u8_vec(Ke);
 
+    println!("writing Ke");
     stream.write(&mut Ke_bytes)?;
 
     let Km = sqmul::square_mult(beta, bin_i, prime);
@@ -157,12 +160,13 @@ fn client() -> std::io::Result<()> {
     buff = [0; 4];
     stream.read_exact(&mut buff)?;
     let y = u8_vec_to_u32(buff.try_into().expect("ISSUE WITH Y"));
+    println!("received y");
 
 
     let (gcd, s, t) = sqmul::eea(Km as i32, prime as i32);
     let Km_inv: u32 = ((s + prime as i32) % (prime as i32)).try_into().expect("HUH");
 
-    println!("received the message {}", y * Km_inv % prime);
+    println!("MESSAGE: {}", y * Km_inv % prime);
     Ok(())
 }
 
