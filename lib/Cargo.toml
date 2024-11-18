@@ -1,0 +1,8 @@
+[package]
+name = "sqmul"
+version = "0.0.1"
+authors = ["catsferlife"]
+
+[lib]
+name = "lib"
+path = "lib.rs"
