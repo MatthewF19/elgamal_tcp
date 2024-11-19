@@ -41,7 +41,7 @@ fn host() -> std::io::Result<()> {
     io::stdin().read_line(&mut buffer)?;
 
     let trimmed_prime = buffer.trim();
-    let mut prime = trimmed_prime.parse::<u32>().unwrap();
+    let mut prime = trimmed_prime.parse::<u32>().unwrap_or(7);
     if prime == 0 { prime = 7; }
 
     // ask for alpha value from the user or use the default (3)  
@@ -51,7 +51,7 @@ fn host() -> std::io::Result<()> {
     io::stdin().read_line(&mut buffer)?;
 
     let trimmed_alpha = buffer.trim();
-    let mut alpha = trimmed_alpha.parse::<u32>().unwrap();
+    let mut alpha = trimmed_alpha.parse::<u32>().unwrap_or(3);
     if alpha == 0 { alpha = 3; }
 
     // ask for d value from the user or use the default (5)  
@@ -61,7 +61,7 @@ fn host() -> std::io::Result<()> {
     io::stdin().read_line(&mut buffer)?;
 
     let trimmed_d = buffer.trim();
-    let mut d = trimmed_d.parse::<u32>().unwrap();
+    let mut d = trimmed_d.parse::<u32>().unwrap_or(5);
     if d == 0 { d = 5; }
     let bin_d = String::from(format!("{d:b}"));
 
@@ -92,7 +92,7 @@ fn host() -> std::io::Result<()> {
     let y = (msg * Km) % prime;
     let mut bin_y = u32_to_u8_vec(y);
 
-    println!("writing y");
+    println!("writing y as {}", y);
     socket.write(&mut bin_y)?;
 
     Ok(())
@@ -144,7 +144,7 @@ fn client() -> std::io::Result<()> {
     io::stdin().read_line(&mut input_buffer)?;
 
     let trimmed_i = input_buffer.trim();
-    let mut i = trimmed_i.parse::<u32>().unwrap();
+    let mut i = trimmed_i.parse::<u32>().unwrap_or(3);
     if i == 0 { i = 3; }
     let bin_i = String::from(format!("{i:b}"));
 
