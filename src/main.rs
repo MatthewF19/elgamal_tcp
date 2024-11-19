@@ -12,7 +12,7 @@ impl FromStr for Status {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        return match s {
+        return match s.to_lowercase().as_ref() {
             "bob" => Ok(Self::BOB),
             "alice" => Ok(Self::ALICE),
             _ => Err(())
