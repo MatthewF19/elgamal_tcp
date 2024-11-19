@@ -1,4 +1,4 @@
-# ElGamal encryption over TCP
+# ElGamal encryption over a TCP connection in Rust
 ## Matthew Fiedler -- 11/19/2024
 
 ### Usage
