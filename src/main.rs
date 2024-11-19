@@ -77,7 +77,7 @@ fn host() -> std::io::Result<()> {
     println!("writing alpha");
     socket.write(&mut alpha_bytes)?;
     socket.flush()?;
-    println!("writing beta");
+    println!("writing beta as {}", beta);
     socket.write(&mut beta_bytes)?;
     socket.flush()?;
     
@@ -151,7 +151,7 @@ fn client() -> std::io::Result<()> {
     let Ke = sqmul::square_mult(alpha, bin_i.clone(), prime);
     let mut Ke_bytes = u32_to_u8_vec(Ke);
 
-    println!("writing Ke");
+    println!("writing Ke as {}", Ke);
     stream.write(&mut Ke_bytes)?;
 
     let Km = sqmul::square_mult(beta, bin_i, prime);
